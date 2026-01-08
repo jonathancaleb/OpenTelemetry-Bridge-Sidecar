@@ -4,12 +4,12 @@
 ## Why I’m building it  
 I’m tackling a **personal challenge**: give any legacy service modern observability **without touching its code**.  
 Right now I’m wiring it into a farmer photo-upload API I run in rural Uganda; on 2G links the uploads vanish into silent 502/504 holes while the NestJS monolith has **zero tracing**.  
-The sidecar sits unseen between phone and backend, measuring upload latency, body size, retry storms and error rates—then ships everything over OTLP to any collector. No redeploy, no restarts.
+The sidecar sits unseen between phone and backend, measuring upload latency, body size, retry storms and error rates then ships everything over OTLP to any collector. No redeploy, no restarts.
 
 ## Inspiration  
 The side-car pattern distilled by Mrinal in [“All about Sidecar”](https://medium.com/@mrinaldoesanything/all-about-sidecar-de79f93565d1) plus OpenTelemetry research papers and a lot of AI-assisted experimentation.
 
-## Quick start (today)  
+## Quick start  
 ```bash
 # 1. clone & build
 git clone https://github.com/you/otel-bridge.git
@@ -23,7 +23,7 @@ curl -X POST localhost:8080/upload -F "photo=@maize.jpg"
 open http://localhost:16686
 ```
 
-## Repo layout (as it grows)  
+## bones 
 ```
 cmd/bridge          # main()
 internal/proxy      # reverse-proxy core
