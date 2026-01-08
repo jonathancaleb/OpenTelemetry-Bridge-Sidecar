@@ -7,7 +7,7 @@ Right now I’m wiring it into a farmer photo-upload API I run in rural Uganda; 
 The sidecar sits unseen between phone and backend, measuring upload latency, body size, retry storms and error rates then ships everything over OTLP to any collector. No redeploy, no restarts.
 
 ## Inspiration  
-The side-car pattern distilled by Mrinal in [“All about Sidecar”](https://medium.com/@mrinaldoesanything/all-about-sidecar-de79f93565d1) plus OpenTelemetry research papers and a lot of AI-assisted experimentation.
+The side-car pattern distilled by Mrinal in [“All about Sidecar”](https://medium.com/@mrinaldoesanything/all-about-sidecar-de79f93565d1) plus OpenTelemetry research papers and claude backed breakdowns that help me understand complex concepts, scenarios, and the papers themselves.
 
 ## Quick start  
 ```bash
