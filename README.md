@@ -1,5 +1,5 @@
 # OpenTelemetry Bridge Sidecar  
-*A transparent, drop-in reverse-proxy that adds W3C tracing to any HTTP service—no code changes.*
+*A transparent, drop-in reverse-proxy that adds W3C tracing to any HTTP service.*
 
 ## Why I’m building it  
 I’m tackling a **personal challenge**: give any legacy service modern observability **without touching its code**.  
