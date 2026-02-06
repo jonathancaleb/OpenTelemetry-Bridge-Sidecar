@@ -31,10 +31,6 @@ func NewReverseProxy(upstreamURL string) (*ReverseProxy, error) {
 		req.Header.Set("X-Forwarded-Host", req.Host)
 		req.Header.Set("X-Real-IP", req.RemoteAddr)
 
-		req.Header.Del("Authorization")
-
-		req.URL.Path = "/caleb" + req.URL.Path
-
 		log.Printf("=== Request Headers for %s %s ===", req.Method, req.URL.Path)
 		for name, values := range req.Header {
 			for _, value := range values {
