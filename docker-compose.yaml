@@ -1,0 +1,36 @@
+services:
+  # Jaeger - All-in-one tracing backend
+  jaeger:
+    image: jaegertracing/jaeger:2
+    container_name: jaeger
+    ports:
+      - "16686:16686"  # Jaeger UI
+      - "4317:4317"    # OTLP gRPC
+      - "4318:4318"    # OTLP HTTP
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+
+  # Sample upstream application
+  sample-app:
+    build:
+      context: ./examples/sample-app
+      dockerfile: Dockerfile
+    container_name: sample-app
+    ports:
+      - "3000:3000"
+
+  # The sidecar proxy
+  sidecar:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: otel-sidecar
+    ports:
+      - "8080:8080"
+    environment:
+      - CONFIG_FILE=/app/config.yaml
+    volumes:
+      - ./internal/config/config-docker.yaml:/app/config.yaml:ro
+    depends_on:
+      - jaeger
+      - sample-app

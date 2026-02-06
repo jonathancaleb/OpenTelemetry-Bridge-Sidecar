@@ -1,0 +1,9 @@
+# Docker-specific config - uses service names for networking
+address: ":8080"
+url: "http://sample-app:3000"
+endpoint: "/api/data"
+rate: 5
+bufferSize: 5
+otlpEndpoint: "jaeger:4317"
+serviceName: "otel-sidecar"
+upstreamUrl: "http://sample-app:3000"

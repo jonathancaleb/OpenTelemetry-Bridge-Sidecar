@@ -3,3 +3,6 @@ url: "http://example.user"
 endpoint: "/api/data"
 rate: 5
 bufferSize: 5
+otlpEndpoint: "localhost:4317"
+serviceName: "otel-sidecar"
+upstreamUrl: "http://localhost:3000"
