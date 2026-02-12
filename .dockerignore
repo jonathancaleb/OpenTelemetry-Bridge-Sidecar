@@ -1,0 +1,39 @@
+# Version control
+.git
+.github
+.gitignore
+
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+sidecar.exe
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+dist/
+bin/
+*.test
+*.out
+
+# Config / dev tooling
+.air.toml
+.dockerignore
+
+# Documentation
+README.md
+docs/
+
+# Examples (not needed in sidecar image)
+# examples/
