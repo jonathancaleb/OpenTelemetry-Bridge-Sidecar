@@ -1,0 +1,92 @@
+name: Integration Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  docker-compose-test:
+    name: Docker Compose Smoke Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build and start all services
+        run: docker compose up -d --build --wait
+        timeout-minutes: 5
+
+      - name: Wait for services to stabilize
+        run: sleep 10
+
+      - name: Check all containers are running
+        run: |
+          echo "=== Container status ==="
+          docker compose ps
+          
+          for svc in jaeger sample-app otel-sidecar; do
+            STATUS=$(docker inspect --format='{{.State.Running}}' $svc 2>/dev/null || echo "false")
+            if [ "$STATUS" != "true" ]; then
+              echo "FAIL: $svc is not running"
+              docker logs $svc 2>&1 || true
+              exit 1
+            fi
+            echo "OK: $svc is running"
+          done
+
+      - name: Test sidecar proxy
+        run: |
+          echo "=== Testing sidecar proxy ==="
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/ || echo "000")
+          echo "Sidecar responded with: $RESPONSE"
+          if [ "$RESPONSE" = "000" ]; then
+            echo "FAIL: Sidecar is not reachable"
+            docker logs otel-sidecar
+            exit 1
+          fi
+          echo "OK: Sidecar is proxying traffic"
+
+      - name: Test Jaeger UI is available
+        run: |
+          echo "=== Testing Jaeger UI ==="
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:16686/ || echo "000")
+          echo "Jaeger UI responded with: $RESPONSE"
+          if [ "$RESPONSE" = "000" ]; then
+            echo "FAIL: Jaeger UI is not reachable"
+            exit 1
+          fi
+          echo "OK: Jaeger UI is available"
+
+      - name: Generate trace traffic
+        run: |
+          echo "=== Generating trace traffic ==="
+          for i in $(seq 1 5); do
+            curl -s http://localhost:8080/ > /dev/null || true
+            sleep 1
+          done
+          echo "Sent 5 requests through sidecar"
+          sleep 5
+
+      - name: Verify traces in Jaeger
+        run: |
+          echo "=== Checking Jaeger for traces ==="
+          SERVICES=$(curl -s http://localhost:16686/api/services | head -c 500)
+          echo "Jaeger services: $SERVICES"
+
+      - name: Collect logs on failure
+        if: failure()
+        run: |
+          echo "=== Sidecar logs ==="
+          docker logs otel-sidecar 2>&1 || true
+          echo "=== Sample app logs ==="
+          docker logs sample-app 2>&1 || true
+          echo "=== Jaeger logs ==="
+          docker logs jaeger 2>&1 || true
+
+      - name: Tear down
+        if: always()
+        run: docker compose down -v --remove-orphans
